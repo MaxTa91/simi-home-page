@@ -269,6 +269,7 @@ img {
     font-weight: bold;
     display: inline-block;
     line-height: normal !important;
+    outline: none!important;
 }
 
 .m-btn-default {
@@ -384,7 +385,6 @@ img {
     padding: 0 125px;
 }
 
-/*.section-slider .swiper-wrapper{overflow: hidden;}*/
 .news-slider-item {
     text-align: left;
 }
@@ -443,6 +443,12 @@ img {
     position: absolute;
     bottom: 0;
     left: 50%;
+}
+
+.custom-errors{
+    margin: 0;
+    padding: 10px;
+    transition: 0.35s;
 }
 
 /** HEADER */

@@ -1,36 +1,112 @@
 jQuery(document).ready(function ($) {
 
+    //Alert messages Box:
+    var customErrors = $('.custom-errors');
+    customErrors.hide();
 
-    $('#contact_form').on('submit', function () {
-        var data = $(this).serialize();
-        console.log(data);
-
-        $.ajax({
-            url: "/test-ajax/submit-success.php",
-            method: "POST",
-            data: data,
-            dataType: "json"
-        }).done(function(data) {
-            if(data.success == true) {
-
-            }else{
-
-            }
-        }).fail(function() {
-            alert( "error" );
-        }).always(function() {
-            //alert( "complete" );
-        });
-
-        return false;
+    customErrors.on('click', function (e) {
+        $(this).hide();
     });
+
+    //Contact Form:
+    $('#contact_form').on('submit', function (e) {
+        e.preventDefault();
+
+        var validateResult = validateContactForm();
+
+        if(validateResult === true){
+            var data = $('#contact_form').serialize();
+            // console.log(data);
+            $.ajax({
+                url: "/test-ajax/submit.php",
+                method: "POST",
+                data: {testData : data},
+                dataType: "json"
+            }).done(function (data) {
+                if (data.success === true) {
+                    console.log(data.message);
+                    console.log(data);
+                } else {
+                    console.log(data.message);
+                }
+            }).fail(function () {
+                alert("AJAX fail!");
+            }).always(function () {
+                //alert( "complete" );
+            });
+        }
+    });
+
+    function validateContactForm(data) {
+        // Select form inputs by name attr:
+        var firstName = $("#contact_form input[name=firstName]");
+        var email = $("#contact_form input[name=email]");
+        var platform = $("#contact_form input[name=platform]");
+        var website = $("#contact_form input[name=website]");
+
+        //Take value inputs:
+        var firstNameVal = firstName.val();
+        var emailVal = email.val();
+        var platformVal = platform.val();
+        var websiteVal = website.val();
+
+        // console.log(firstNameVal);
+        // console.log(emailVal);
+        // console.log(platformVal);
+        // console.log(websiteVal);
+
+        //REG:
+        var nameReg = /^[A-za-z]+$/;
+        var numberReg =  /^[0-9]+$/;
+        var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+
+        //Validate:
+        if(firstNameVal == ""){
+            showErrors('Please enter your name!');
+            return false;
+        }
+        else if(!nameReg.test(firstNameVal)){
+            showErrors('Letters only');
+            return false;
+        }
+
+        if(emailVal == ""){
+            showErrors('Please enter your email!');
+            return false;
+        }
+        else if(!emailReg.test(emailVal)){
+            showErrors('Please enter a valid email address!');
+            return false;
+        }
+
+        if(platformVal == ""){
+            showErrors('Please choose an option!')
+            return false;
+        }
+        else if(!numberReg.test(platformVal)){
+            showErrors('Some errors with option, please try again later!');
+            return false;
+        }
+
+        if(websiteVal == ""){
+            showErrors('Please give us an example of your own domain name.');
+            return false;
+        }
+
+        return true;
+    }
+
+    function showErrors(messages) {
+        customErrors.text(messages);
+        customErrors.show();
+    }
 
     //SLIDER
 
     var swiper = new Swiper('#news-slider', {
-       slidesPerView: 3,
-       autoplay: 3500,
-       speed: 1000,
+        slidesPerView: 3,
+        autoplay: 3500,
+        speed: 1000,
         nextButton: '#news-next-btn',
         prevButton: '#news-prev-btn',
         spaceBetween: 50,
@@ -38,16 +114,16 @@ jQuery(document).ready(function ($) {
     });
 
     //MOBILE MENU
-   /* $('#btn-mobile').on("click", function () {
-        var submenu = $('#mobile-nav');
-        if (submenu.is(":visible")) {
-            submenu.slideUp();
-        }
-        else {
-            submenu.slideDown();
-        }
-        // return false;
-    });*/
+    /* $('#btn-mobile').on("click", function () {
+     var submenu = $('#mobile-nav');
+     if (submenu.is(":visible")) {
+     submenu.slideUp();
+     }
+     else {
+     submenu.slideDown();
+     }
+     // return false;
+     });*/
 
     $(window).scroll(function () {
         if ($(window).scrollTop() >= 1200) {

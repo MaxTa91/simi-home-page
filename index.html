@@ -311,32 +311,35 @@
                 </div>
                 <div class="contact-inner contact-right">
                     <form action="" method="POST" id="contact_form">
-                        <input type="text" placeholder="Your first name" name="firstName" class="m-input-control">
-                        <input type="email" placeholder="Your email" name="email" class="m-input-control">
+                        <input type="text" placeholder="Your first name" name="firstName" class="m-input-control" required>
+                        <input type="email" placeholder="Your email" name="email" class="m-input-control" required>
                         <h3 class="m-form-question">With your website, you want to build app with?</h3>
 
 
                         <div class="form-check row">
                             <input class="form-check-input col-md-3" type="radio" name="platform" id="radio1"
-                                   value="option1" checked>
+                                   value="1" checked >
                             <label class="form-check-label col-md-9" for="radio1">Magento 1</label>
                         </div>
                         <div class="form-check row">
                             <input class="form-check-input col-md-3" type="radio" name="platform" id="radio2"
-                                       value="option2">
+                                   value="2">
                             <label class="form-check-label col-md-9" for="radio2">Magento 2</label>
                         </div>
                         <div class="form-check row">
                             <input class="form-check-input col-md-3" type="radio" name="platform" id="radio3"
-                                       value="option3">
+                                   value="0">
                             <label class="form-check-label col-md-9" for="radio3">I don’t have a website</label>
                         </div>
                         <input type="text" name="website" placeholder="Your website" class="m-input-control"
-                               list="radio-list">
+                               list="radio-list" required>
                         <datalist id="radio-list">
                             <option value="http://">
                             <option value="https://">
                         </datalist>
+                        <div class="alert alert-warning custom-errors">
+                            Show errors here!
+                        </div>
                         <input type="submit" name="submit" value="Start now" class="m-btn m-btn-default">
                     </form>
                 </div>
@@ -379,7 +382,8 @@
                             <li class="footer-list-item"><a href="#">M-Commerce Blog</a></li>
                             <li class="footer-list-item"><a href="#">Why SimiCart?</a></li>
                             <li class="footer-list-item"><a href="#">Contact us</a></li>
-                            <li class="footer-list-item item-image"><a href="#"><img src="assets/images/footer-magento.png" alt=""></a>
+                            <li class="footer-list-item item-image"><a href="#"><img
+                                    src="assets/images/footer-magento.png" alt=""></a>
                             </li>
                         </ul>
                         <ul class="footer-list-items payment-list">
