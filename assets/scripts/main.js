@@ -51,6 +51,7 @@ jQuery(document).ready(function ($) {
                 if(responseData.status === 200){
                     console.log(responseData);
                     console.log(responseData.responseText.evalJSON());
+                    return;
                 }
                 return false;
             }
