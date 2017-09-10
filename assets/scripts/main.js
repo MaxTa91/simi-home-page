@@ -17,23 +17,47 @@ jQuery(document).ready(function ($) {
         if(validateResult === true){
             var data = $('#contact_form').serialize();
             // console.log(data);
-            $.ajax({
-                url: "/test-ajax/submit.php",
-                method: "POST",
-                data: {testData : data},
-                dataType: "json"
-            }).done(function (data) {
-                if (data.success === true) {
-                    console.log(data.message);
-                    console.log(data);
-                } else {
-                    console.log(data.message);
-                }
-            }).fail(function () {
-                alert("AJAX fail!");
-            }).always(function () {
-                //alert( "complete" );
+
+
+            // $.ajax({
+            //     url: "/test-ajax/submit.php",
+            //     method: "POST",
+            //     data: {testData : data},
+            //     dataType: "json"
+            // }).done(function (data) {
+            //     if (data.success === true) {
+            //         console.log(data.message);
+            //         console.log(data);
+            //     } else {
+            //         console.log(data.message);
+            //     }
+            // }).fail(function () {
+            //     alert("AJAX fail!");
+            // }).always(function () {
+            //     //alert( "complete" );
+            // });
+
+            /////////////////////////////////////////// PROTOTYPE AJAX
+
+            var prototypeAjax = new Ajax.Request ('test-ajax/submit.php', {
+                method: 'post',
+                parameters: {'testData' : data},
+                onSuccess: prototypeAjaxSuccess,
+                onFailure: prototypeAjaxFail
             });
+
+
+            function prototypeAjaxSuccess(responseData){
+                if(responseData.status === 200){
+                    console.log(responseData);
+                    console.log(responseData.responseText.evalJSON());
+                }
+                return false;
+            }
+
+            function prototypeAjaxFail(){
+                alert('Prototype AJAX failed!');
+            }
         }
     });
 
@@ -101,6 +125,7 @@ jQuery(document).ready(function ($) {
         customErrors.show();
     }
 
+
     //SLIDER
 
     var swiper = new Swiper('#news-slider', {
@@ -166,3 +191,4 @@ jQuery(document).ready(function ($) {
 
     $('#preloader').remove();
 });
+
