@@ -54,13 +54,12 @@ function CustomAjax(formInputs, acceptFields, url, method) {
     this.sendAjax = function(){
         var prototypeAjax = new Ajax.Request(this.url, {
             method: this.method,
-            parameters: {'testData': this.sendData},
+            parameters: {"testData": this.sendData},
             onSuccess: prototypeAjaxSuccess,
             onFailure: prototypeAjaxFail
         });
         function prototypeAjaxSuccess(responseData) {
             if (responseData.status === 200) {
-                console.log(responseData);
                 console.log(responseData.responseText.evalJSON());
                 return;
             }
@@ -106,13 +105,13 @@ function CustomAjax(formInputs, acceptFields, url, method) {
                         this.checkAndPushValue(input.value, input.name, 'Field ' + input.name + ' must be number!', this.numberReg);
                         break;
                     case 'url':
-                        this.checkAndPushValue(input.value, input.name, 'Field ' + input.name + ' must be number!', this.websiteReg);
+                        this.checkAndPushValue(input.value, input.name, 'Field ' + input.name + ' must be url!', this.websiteReg);
                         break;
                     case 'radio':
-                        this.checkAndPushValue(input.value, input.name, 'Field ' + input.name + ' must be number!', this.numberReg);
+                        this.checkAndPushValue(input.value, input.name, 'Field ' + input.name + ' error!', this.numberReg);
                         break;
                     default:
-                        this.checkAndPushValue(input.value, input.name, 'Field ' + input.name + ' not valid!', this.textReg);
+                        this.checkAndPushValue(input.value, input.name, 'Field ' + input.name + ' error!', this.textReg);
                         break;
                 }
             }
@@ -143,11 +142,18 @@ jQuery(document).ready(function ($) {
     //Contact Form:
     var acceptFields = ['firstName', 'website', 'platform', 'email'];
     var ajaxData = $('#contact_form input:not([type = submit])');
-    var ajaxUrl = '/test-ajax/submit-success.php';
+    var ajaxUrl = '/test-ajax/submit.php';
 
     $('#contact_form').on('submit', function (e) {
         e.preventDefault();
-        var testAjax = new CustomAjax(ajaxData, acceptFields, ajaxUrl, 'post');
+        var testAjax = new CustomAjax(ajaxData, acceptFields, ajaxUrl);
+
+        //Test:
+        // testAjax.setMethod('get');
+        var a = testAjax.getSendData();
+        console.log(a);
+
+
         // $.ajax({
         //     url: "/test-ajax/submit.php",
         //     method: "POST",
