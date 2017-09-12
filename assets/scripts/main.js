@@ -1,134 +1,174 @@
-jQuery(document).ready(function ($) {
+function CustomAjax(formInputs, acceptFields, url, method) {
+    //Setting AJAX:
+    this.inputs = formInputs;
+    this.acceptFields = acceptFields;
+    this.url = url;
+    this.method = method ? method : 'post';
+    this.errors = {};
+    //Count Errors:
+    this.hasNoErrors = function () {
+        for (var key in this.errors) {
+            if (this.errors.hasOwnProperty(key))
+                return false;
+        }
+        return true;
+    };
+    //Data to submit:
+    this.sendData = {};
 
+    //SET Setting AJAX:
+    this.setURL = function (url) {
+        this.url = url;
+    };
+    this.setMethod = function (method) {
+        this.method = method;
+    };
+    this.setAcceptFields = function (fields) {
+        this.acceptFields = fields;
+    };
+    this.setErrors = function(error, mess){
+        this.errors[error] = mess;
+    };
+    this.setSendData = function(key, val){
+        this.sendData[key] = val;
+    };
+
+    //GET Setting AJAX:
+    this.getURL = function(){
+      return this.url;
+    };
+    this.getMethod = function(){
+        return this.method;
+    };
+    this.getAcceptFields = function(){
+        return this.acceptFields;
+    };
+    this.getErrors = function(){
+        return this.errors;
+    };
+    this.getSendData = function(){
+        return this.sendData;
+    };
+
+    //AJAX handle:
+    this.sendAjax = function(){
+        var prototypeAjax = new Ajax.Request(this.url, {
+            method: this.method,
+            parameters: {'testData': this.sendData},
+            onSuccess: prototypeAjaxSuccess,
+            onFailure: prototypeAjaxFail
+        });
+        function prototypeAjaxSuccess(responseData) {
+            if (responseData.status === 200) {
+                console.log(responseData);
+                console.log(responseData.responseText.evalJSON());
+                return;
+            }
+            return false;
+        }
+        function prototypeAjaxFail() {
+            alert('Prototype AJAX failed!');
+        }
+    };
+
+    //Validate Rules:
+    this.textReg = /^[A-za-z]+$/;
+    this.numberReg = /^[0-9]+$/;
+    this.emailReg = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    this.websiteReg = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
+    //Check value if ok then push to sendData for submit AJAX:
+    this.checkAndPushValue = function (value, name, mess, checkType) {
+        if (checkType.test(value)) {
+            this.sendData[name] = value;
+        } else {
+            this.errors[name] = mess;
+        }
+    };
+
+    //Validate handle:
+    this.dataValidate = function(){
+        for (var i = 0; i < this.inputs.length; i++) {
+            var input = this.inputs[i];
+            if (this.acceptFields.indexOf(input.name) === -1) {
+                this.errors[input.name] = input.name + ' is not valid [Type: Mass Assignment]';
+            }
+            if (input.value == '') {
+                this.errors['notEnoughInput'] = 'Missing input to submit!';
+            } else {
+                switch (input.type) {
+                    case 'text':
+                        this.checkAndPushValue(input.value, input.name, 'Field ' + input.name + ' must be string!', this.textReg);
+                        break;
+                    case 'email':
+                        this.checkAndPushValue(input.value, input.name, 'Field ' + input.name + ' must be an email!', this.emailReg);
+                        break;
+                    case 'number':
+                        this.checkAndPushValue(input.value, input.name, 'Field ' + input.name + ' must be number!', this.numberReg);
+                        break;
+                    case 'url':
+                        this.checkAndPushValue(input.value, input.name, 'Field ' + input.name + ' must be number!', this.websiteReg);
+                        break;
+                    case 'radio':
+                        this.checkAndPushValue(input.value, input.name, 'Field ' + input.name + ' must be number!', this.numberReg);
+                        break;
+                    default:
+                        this.checkAndPushValue(input.value, input.name, 'Field ' + input.name + ' not valid!', this.textReg);
+                        break;
+                }
+            }
+        }
+    };
+
+
+    this.dataValidate();
+    //Check if error.count() === 0 then do AJAX:
+    if (this.hasNoErrors()) {
+        this.sendAjax();
+    } else {
+        console.log('Some error:');
+        console.log(this.errors);
+    }
+}
+
+//import { CustomAjax } from 'CustomAjax';
+
+jQuery(document).ready(function ($) {
     //Alert messages Box:
     var customErrors = $('.custom-errors');
     customErrors.hide();
-
     customErrors.on('click', function (e) {
         $(this).hide();
     });
 
     //Contact Form:
+    var acceptFields = ['firstName', 'website', 'platform', 'email'];
+    var ajaxData = $('#contact_form input:not([type = submit])');
+    var ajaxUrl = '/test-ajax/submit-success.php';
+
     $('#contact_form').on('submit', function (e) {
         e.preventDefault();
-
-        var validateResult = validateContactForm();
-
-        if(validateResult === true){
-            var data = $('#contact_form').serialize();
-            // console.log(data);
-
-
-            // $.ajax({
-            //     url: "/test-ajax/submit.php",
-            //     method: "POST",
-            //     data: {testData : data},
-            //     dataType: "json"
-            // }).done(function (data) {
-            //     if (data.success === true) {
-            //         console.log(data.message);
-            //         console.log(data);
-            //     } else {
-            //         console.log(data.message);
-            //     }
-            // }).fail(function () {
-            //     alert("AJAX fail!");
-            // }).always(function () {
-            //     //alert( "complete" );
-            // });
-
-            /////////////////////////////////////////// PROTOTYPE AJAX
-
-            var prototypeAjax = new Ajax.Request ('test-ajax/submit.php', {
-                method: 'post',
-                parameters: {'testData' : data},
-                onSuccess: prototypeAjaxSuccess,
-                onFailure: prototypeAjaxFail
-            });
-
-
-            function prototypeAjaxSuccess(responseData){
-                if(responseData.status === 200){
-                    console.log(responseData);
-                    console.log(responseData.responseText.evalJSON());
-                    return;
-                }
-                return false;
-            }
-
-            function prototypeAjaxFail(){
-                alert('Prototype AJAX failed!');
-            }
-        }
+        var testAjax = new CustomAjax(ajaxData, acceptFields, ajaxUrl, 'post');
+        // $.ajax({
+        //     url: "/test-ajax/submit.php",
+        //     method: "POST",
+        //     data: {testData : data},
+        //     dataType: "json"
+        // }).done(function (data) {
+        //     if (data.success === true) {
+        //         console.log(data.message);
+        //         console.log(data);
+        //     } else {
+        //         console.log(data.message);
+        //     }
+        // }).fail(function () {
+        //     alert("AJAX fail!");
+        // }).always(function () {
+        //     //alert( "complete" );
+        // });
     });
-
-    function validateContactForm(data) {
-        // Select form inputs by name attr:
-        var firstName = $("#contact_form input[name=firstName]");
-        var email = $("#contact_form input[name=email]");
-        var platform = $("#contact_form input[name=platform]");
-        var website = $("#contact_form input[name=website]");
-
-        //Take value inputs:
-        var firstNameVal = firstName.val();
-        var emailVal = email.val();
-        var platformVal = platform.val();
-        var websiteVal = website.val();
-
-        // console.log(firstNameVal);
-        // console.log(emailVal);
-        // console.log(platformVal);
-        // console.log(websiteVal);
-
-        //REG:
-        var nameReg = /^[A-za-z]+$/;
-        var numberReg =  /^[0-9]+$/;
-        var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-
-        //Validate:
-        if(firstNameVal == ""){
-            showErrors('Please enter your name!');
-            return false;
-        }
-        else if(!nameReg.test(firstNameVal)){
-            showErrors('Letters only');
-            return false;
-        }
-
-        if(emailVal == ""){
-            showErrors('Please enter your email!');
-            return false;
-        }
-        else if(!emailReg.test(emailVal)){
-            showErrors('Please enter a valid email address!');
-            return false;
-        }
-
-        if(platformVal == ""){
-            showErrors('Please choose an option!')
-            return false;
-        }
-        else if(!numberReg.test(platformVal)){
-            showErrors('Some errors with option, please try again later!');
-            return false;
-        }
-
-        if(websiteVal == ""){
-            showErrors('Please give us an example of your own domain name.');
-            return false;
-        }
-
-        return true;
-    }
-
-    function showErrors(messages) {
-        customErrors.text(messages);
-        customErrors.show();
-    }
 
 
     //SLIDER
-
     var swiper = new Swiper('#news-slider', {
         slidesPerView: 3,
         autoplay: 3500,

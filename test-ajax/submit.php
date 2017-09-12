@@ -1,4 +1,6 @@
 <?php
+
+return $_POST['testData'];
 if(isset($_POST['testData'])){
     $data = $_POST['testData'];
     parse_str($data, $data); // unserialize js query string URL
@@ -8,6 +10,13 @@ if(isset($_POST['testData'])){
         include_once('submit-fail.php');
     }
 } else {
-    echo "No permission";
+    // code: 0 -> fail
+    //       1 -> success
+    $data = [
+        'code' => 0,
+        'message' => "No permission"
+    ];
+    echo json_encode($data);
+    exit;
 }
 exit;

@@ -1,6 +1,6 @@
 <?php
 echo json_encode([
-    'success' => true,
+    'code' => 1,
     'message' => 'AJAX return: Success'
 ]);
 exit;
